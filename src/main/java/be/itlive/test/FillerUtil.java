@@ -25,13 +25,16 @@ import be.itlive.common.utils.ReflectionUtils;
 /**
  *
  * {@link FillerUtil} can be used to get an instance of any class you want with the primary fields (int, double,
- * BigInteger, String, Date, ...) fully initialized.
+ * BigInteger, String, Date, ...) fully initialised.
  *
  * @author vbiertho
  */
 public final class FillerUtil {
 
+//TODO VBI : create a common-test lib and place it there. Share it with Kamel.
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(FillerUtil.class);
+	private static final int DEFAULT_DEPTH = 3;
 
 	/**
 	 * Prevent instantiation.
@@ -50,7 +53,7 @@ public final class FillerUtil {
 	 * @return An instance fully filled with random values.
 	 */
 	public static <T> T fill(final Class<T> inClass) {
-		return fill(inClass, true, 0);
+		return fill(inClass, true, DEFAULT_DEPTH);
 	}
 
 	/**
@@ -64,7 +67,7 @@ public final class FillerUtil {
 	 * @return An instance fully filled with random values.
 	 */
 	public static <T> T fill(final Class<T> inClass, final String... fieldsNameToIgnore) {
-		return fill(inClass, true, 0, fieldsNameToIgnore);
+		return fill(inClass, true, DEFAULT_DEPTH, fieldsNameToIgnore);
 	}
 
 	/**
@@ -76,7 +79,7 @@ public final class FillerUtil {
 	 * @param inClass            The class of the needed object.
 	 * @param fieldsNameToIgnore If some fields should not be processed you can exclude them by giving their names.
 	 * @param setSuperFields     If true the methods of the super class are taken into account.
-	 * @param maxDepth           until what depth fields should be instantiate (default=0).
+	 * @param maxDepth           until what depth fields should be instantiate (default=3).
 	 * @return An instance fully filled with random values.
 	 */
 	public static <T> T fill(final Class<T> inClass, final boolean setSuperFields, final int maxDepth, final String... fieldsNameToIgnore) {
@@ -90,7 +93,7 @@ public final class FillerUtil {
 	 * @param inClass            The class of the needed object.
 	 * @param fieldsNameToIgnore If some fields should not be processed you can exclude them by giving their names.
 	 * @param setSuperFields     If true the methods of the super class are taken into account.
-	 * @param maxDepth           to what depth field should be instantiate (default=0).
+	 * @param maxDepth           to what depth field should be instantiate (default=3).
 	 * @param currentDepth       current depth (so start =0).
 	 * @return An instance fully filled with random values.
 	 */
@@ -127,7 +130,7 @@ public final class FillerUtil {
 	 * 
 	 * @param target       the target object to fill with random value.
 	 * @param fields       list of field to handle
-	 * @param maxDepth     to what depth field should be instantiate (default=0).
+	 * @param maxDepth     to what depth field should be instantiate (default=3).
 	 * @param currentDepth current depth (so start =0).
 	 * @param              <T> object Type.
 	 */
@@ -149,7 +152,7 @@ public final class FillerUtil {
 					}
 				} else {
 					// basic type.
-					Object value = getRandomValue(propertyType);
+					Object value = getRandomValue(propertyType, maxDepth, currentDepth);
 					if (value != null) {
 						FieldUtils.writeField(field, target, value, true);
 					}
@@ -160,6 +163,10 @@ public final class FillerUtil {
 			}
 		}
 
+	}
+
+	public static <T> T getRandomValue(final Class<T> inClass) {
+		return getRandomValue(inClass, 0, 0);
 	}
 
 	/**
@@ -181,12 +188,14 @@ public final class FillerUtil {
 	 * <li><b>Enum</b> : one of the Enum type.</li>
 	 * </ul>
 	 * 
-	 * @param inClass The class to fill.
-	 * @param         <T> object Type.
+	 * @param inClass      The class to fill.
+	 * @param              <T> object Type.
+	 * @param currentDepth current depth.
+	 * @param maxDepth     to what depth field should be instantiate (default=3).
 	 * @return A random value or null if the class provided is not handled by the method.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T getRandomValue(final Class<T> inClass) {
+	public static <T> T getRandomValue(final Class<T> inClass, final int maxDepth, final int currentDepth) {
 		if (inClass == null) {
 			return null;
 		}
@@ -224,7 +233,9 @@ public final class FillerUtil {
 		} else if (inClass.isAnnotation() || inClass.isInterface()) {
 			LOGGER.warn("No random value possible for : {}", inClass.toString());
 		} else {
-			value = fill(inClass, false, 0);
+			if (currentDepth < maxDepth) {
+				value = fill(inClass, false, maxDepth - 1, currentDepth);
+			}
 
 			// empty value
 		}
@@ -235,7 +246,7 @@ public final class FillerUtil {
 	 * Using the field type, create and fill a collection with random data (see {@link #getRandomValue(Class)})
 	 * 
 	 * @param field        the collection type field.
-	 * @param maxDepth     to what depth field should be instantiate (default=0).
+	 * @param maxDepth     to what depth field should be instantiate (default=3).
 	 * @param currentDepth current depth (so start =0).
 	 * @return a new collection
 	 * @throws InstantiationException when the field can't be instantiate.
@@ -251,7 +262,7 @@ public final class FillerUtil {
 		Class<?> genericType = GenericUtils.getGenericCollectionType(field);
 		if (genericType != null && currentDepth < maxDepth) {
 			for (int i = 0; i < 10; i++) {
-				Object instance = fill(genericType, true, maxDepth, currentDepth + 1);
+				Object instance = fill(genericType, true, Math.max(maxDepth - (currentDepth + 1), 1), currentDepth + 1);
 				coll.add(instance);
 			}
 		}
