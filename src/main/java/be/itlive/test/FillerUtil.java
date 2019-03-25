@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,28 +199,28 @@ public final class FillerUtil {
 		} else if (Boolean.class.equals(inClass) || boolean.class.equals(inClass)) {
 			value = RandomUtils.nextBoolean();
 		} else if (Double.class.equals(inClass) || double.class.equals(inClass)) {
-			value = RandomUtils.nextDouble() * RandomUtils.nextInt(999999);
+			value = RandomUtils.nextDouble() * RandomUtils.nextInt();
 		} else if (Integer.class.equals(inClass) || int.class.equals(inClass)) {
-			value = RandomUtils.nextInt(Integer.MAX_VALUE);
+			value = RandomUtils.nextInt();
 		} else if (Long.class.equals(inClass) || long.class.equals(inClass)) {
 			value = RandomUtils.nextLong();
 		} else if (Short.class.equals(inClass) || short.class.equals(inClass)) {
-			value = Short.valueOf((short) RandomUtils.nextInt(Short.MAX_VALUE));
+			value = Short.valueOf((short) RandomUtils.nextInt(0, Short.MAX_VALUE));
 		} else if (Character.class.equals(inClass) || char.class.equals(inClass)) {
 			value = RandomStringUtils.randomAscii(1).charAt(0);
 		} else if (Float.class.equals(inClass) || float.class.equals(inClass)) {
-			value = Double.valueOf(RandomUtils.nextDouble() * RandomUtils.nextInt(999999)).floatValue();
+			value = Double.valueOf(RandomUtils.nextDouble() * RandomUtils.nextInt()).floatValue();
 		} else if (Byte.class.equals(inClass) || byte.class.equals(inClass)) {
-			value = RandomUtils.nextInt(Byte.MAX_VALUE);
+			value = RandomUtils.nextInt(0, Byte.MAX_VALUE);
 		} else if (BigDecimal.class.equals(inClass)) {
-			value = BigDecimal.valueOf(RandomUtils.nextDouble() * RandomUtils.nextInt(999999));
+			value = BigDecimal.valueOf(RandomUtils.nextDouble() * RandomUtils.nextInt(0, 999999));
 		} else if (BigInteger.class.equals(inClass)) {
-			value = BigInteger.valueOf(RandomUtils.nextInt(Integer.MAX_VALUE));
+			value = BigInteger.valueOf(RandomUtils.nextInt());
 		} else if (Number.class.equals(inClass)) {
-			value = RandomUtils.nextInt(Byte.MAX_VALUE);
+			value = RandomUtils.nextInt(0, Byte.MAX_VALUE);
 		} else if (Enum.class.isAssignableFrom(inClass)) {
 			T[] enumValues = inClass.getEnumConstants();
-			value = enumValues[RandomUtils.nextInt(enumValues.length)];
+			value = enumValues[RandomUtils.nextInt(0, enumValues.length)];
 		} else if (inClass.isAnnotation() || inClass.isInterface()) {
 			LOGGER.warn("No random value possible for : {}", inClass.toString());
 		} else {
