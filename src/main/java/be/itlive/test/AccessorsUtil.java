@@ -24,7 +24,7 @@ import be.itlive.common.utils.ReflectionUtils;
  * {@link FillerUtil#getRandomValue(Class)}) a random value is set and get to determine if the value has not been
  * modified.
  *
- * @since 2.0.1
+ * @since 1.0.0
  * @author vbiertho
  *
  */
@@ -33,7 +33,7 @@ public final class AccessorsUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AccessorsUtil.class);
 
 	/**
-	 * Prevent instanciation.
+	 * Prevent instantiation.
 	 */
 	private AccessorsUtil() {
 		super();
