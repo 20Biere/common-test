@@ -31,8 +31,6 @@ import be.itlive.common.utils.ReflectionUtils;
  */
 public final class FillerUtil {
 
-//TODO VBI : create a common-test lib and place it there. Share it with Kamel.
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(FillerUtil.class);
 	private static final int DEFAULT_DEPTH = 3;
 
@@ -222,7 +220,7 @@ public final class FillerUtil {
 		} else if (Byte.class.equals(inClass) || byte.class.equals(inClass)) {
 			value = RandomUtils.nextInt(0, Byte.MAX_VALUE);
 		} else if (BigDecimal.class.equals(inClass)) {
-			value = BigDecimal.valueOf(RandomUtils.nextDouble() * RandomUtils.nextInt(0, 999999));
+			value = BigDecimal.valueOf(RandomUtils.nextDouble());
 		} else if (BigInteger.class.equals(inClass)) {
 			value = BigInteger.valueOf(RandomUtils.nextInt());
 		} else if (Number.class.equals(inClass)) {
